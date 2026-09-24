@@ -15,6 +15,16 @@ extern "C" {
 #define LOG_MODULE "UTIL"
 #include "log.h"
 
+// ffmpeg_ffi.h hand-mirrors a slice of AVPixelFormat for bindgen, which cannot
+// see the FFmpeg headers. These pin the two together here, where the real
+// macros are in scope.
+static_assert(AV_PIX_FMT_YUV420P == 0, "ffmpeg_ffi.h drifted from FFmpeg");
+static_assert(AV_PIX_FMT_YUV444P == 5, "ffmpeg_ffi.h drifted from FFmpeg");
+static_assert(AV_PIX_FMT_NV12 == 23, "ffmpeg_ffi.h drifted from FFmpeg");
+static_assert(AV_PIX_FMT_YUV420P10LE == 62, "ffmpeg_ffi.h drifted from FFmpeg");
+static_assert(AV_PIX_FMT_YUV444P10LE == 68, "ffmpeg_ffi.h drifted from FFmpeg");
+static_assert(AV_PIX_FMT_P010LE == 158, "ffmpeg_ffi.h drifted from FFmpeg");
+
 namespace util_encode {
 
 void set_av_codec_ctx(AVCodecContext *c, const std::string &name, int kbs,

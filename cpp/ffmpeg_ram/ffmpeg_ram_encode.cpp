@@ -33,6 +33,21 @@ static int calculate_offset_length(int pix_fmt, int height, const int *linesize,
     offset[0] = linesize[0] * height;
     *length = offset[0] + linesize[1] * height / 2;
     break;
+  case AV_PIX_FMT_YUV420P10LE:
+    offset[0] = linesize[0] * height;
+    offset[1] = offset[0] + linesize[1] * height / 2;
+    *length = offset[1] + linesize[2] * height / 2;
+    break;
+  case AV_PIX_FMT_YUV444P:
+  case AV_PIX_FMT_YUV444P10LE:
+    offset[0] = linesize[0] * height;
+    offset[1] = offset[0] + linesize[1] * height;
+    *length = offset[1] + linesize[2] * height;
+    break;
+  case AV_PIX_FMT_P010LE:
+    offset[0] = linesize[0] * height;
+    *length = offset[0] + linesize[1] * height / 2;
+    break;
   default:
     LOG_ERROR(std::string("unsupported pixfmt") + std::to_string(pix_fmt));
     return -1;
@@ -397,6 +412,49 @@ private:
       frame->data[0] = data;
       frame->data[1] = data + offset[0];
       frame->data[2] = data + offset[1];
+      break;
+    case AV_PIX_FMT_YUV420P10LE:
+      if (data_length <
+          frame->height * (frame->linesize[0] + frame->linesize[1] / 2 +
+                           frame->linesize[2] / 2)) {
+        LOG_ERROR(std::string("fill_frame: 420P10 data length error. data_length:") +
+                  std::to_string(data_length) +
+                  ", linesize[0]:" + std::to_string(frame->linesize[0]) +
+                  ", linesize[1]:" + std::to_string(frame->linesize[1]) +
+                  ", linesize[2]:" + std::to_string(frame->linesize[2]));
+        return -1;
+      }
+      frame->data[0] = data;
+      frame->data[1] = data + offset[0];
+      frame->data[2] = data + offset[1];
+      break;
+    case AV_PIX_FMT_YUV444P:
+    case AV_PIX_FMT_YUV444P10LE:
+      if (data_length <
+          frame->height * (frame->linesize[0] + frame->linesize[1] +
+                           frame->linesize[2])) {
+        LOG_ERROR(std::string("fill_frame: 444P data length error. data_length:") +
+                  std::to_string(data_length) +
+                  ", linesize[0]:" + std::to_string(frame->linesize[0]) +
+                  ", linesize[1]:" + std::to_string(frame->linesize[1]) +
+                  ", linesize[2]:" + std::to_string(frame->linesize[2]));
+        return -1;
+      }
+      frame->data[0] = data;
+      frame->data[1] = data + offset[0];
+      frame->data[2] = data + offset[1];
+      break;
+    case AV_PIX_FMT_P010LE:
+      if (data_length <
+          frame->height * (frame->linesize[0] + frame->linesize[1] / 2)) {
+        LOG_ERROR(std::string("fill_frame: P010 data length error. data_length:") +
+                  std::to_string(data_length) +
+                  ", linesize[0]:" + std::to_string(frame->linesize[0]) +
+                  ", linesize[1]:" + std::to_string(frame->linesize[1]));
+        return -1;
+      }
+      frame->data[0] = data;
+      frame->data[1] = data + offset[0];
       break;
     default:
       LOG_ERROR(std::string("fill_frame: unsupported format, ") +
