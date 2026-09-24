@@ -25,6 +25,7 @@ fn main() {
         kbs: 5000,
         fps: 30,
         gop: 60,
+        profile: hwcodec::ffmpeg::FF_PROFILE_UNKNOWN,
         quality: Quality_Default,
         rc: RC_DEFAULT,
         thread_count: 4,

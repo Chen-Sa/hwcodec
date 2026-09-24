@@ -18,7 +18,7 @@ extern "C" {
 namespace util_encode {
 
 void set_av_codec_ctx(AVCodecContext *c, const std::string &name, int kbs,
-                      int gop, int fps) {
+                      int gop, int fps, int profile) {
   c->has_b_frames = 0;
   c->max_b_frames = 0;
   if (gop > 0 && gop < std::numeric_limits<int16_t>::max()) {
@@ -55,7 +55,11 @@ void set_av_codec_ctx(AVCodecContext *c, const std::string &name, int kbs,
   c->color_primaries = AVCOL_PRI_SMPTE170M;
   c->color_trc = AVCOL_TRC_SMPTE170M;
 
-  if (name.find("h264") != std::string::npos) {
+  // FF_PROFILE_UNKNOWN keeps the historical name-derived profile, so callers that
+  // do not care are unaffected; a real profile overrides it.
+  if (profile != FF_PROFILE_UNKNOWN) {
+    c->profile = profile;
+  } else if (name.find("h264") != std::string::npos) {
     c->profile = FF_PROFILE_H264_HIGH;
   } else if (name.find("hevc") != std::string::npos) {
     c->profile = FF_PROFILE_HEVC_MAIN;

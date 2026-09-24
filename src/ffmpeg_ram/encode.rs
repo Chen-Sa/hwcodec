@@ -31,6 +31,7 @@ pub struct EncodeContext {
     pub align: i32,
     pub fps: i32,
     pub gop: i32,
+    pub profile: i32,
     pub rc: RateControl,
     pub quality: Quality,
     pub kbs: i32,
@@ -96,6 +97,7 @@ impl Encoder {
                 offset.as_mut_ptr(),
                 length.as_mut_ptr(),
                 Some(Encoder::callback),
+                ctx.profile,
             );
 
             if codec.is_null() {

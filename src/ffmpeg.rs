@@ -7,6 +7,10 @@ include!(concat!(env!("OUT_DIR"), "/ffmpeg_ffi.rs"));
 
 use serde_derive::{Deserialize, Serialize};
 
+/// FFmpeg's own "unspecified" profile. Passing it to the encoder keeps the
+/// name-derived profile, which is what every caller gets today.
+pub const FF_PROFILE_UNKNOWN: i32 = -99;
+
 #[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
 pub enum AVHWDeviceType {
     AV_HWDEVICE_TYPE_NONE,

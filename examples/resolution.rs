@@ -83,6 +83,7 @@ fn decode_encode(
         kbs: 1_000,
         fps: 30,
         gop: MAX_GOP as _,
+        profile: hwcodec::ffmpeg::FF_PROFILE_UNKNOWN,
         quality: Quality_Default,
         rc: RC_DEFAULT,
         thread_count: 4,

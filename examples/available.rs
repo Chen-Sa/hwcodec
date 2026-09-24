@@ -34,6 +34,7 @@ fn ram() {
         kbs: 1000,
         fps: 30,
         gop: i32::MAX,
+        profile: hwcodec::ffmpeg::FF_PROFILE_UNKNOWN,
         quality: Quality_Default,
         rc: RC_CBR,
         q: -1,

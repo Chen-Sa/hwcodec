@@ -112,6 +112,7 @@ public:
   int q_ = 0;
   int fps_ = 30;
   int gop_ = 0xFFFF;
+  int profile_ = FF_PROFILE_UNKNOWN;
   int thread_count_ = 1;
   int gpu_ = 0;
   RamEncodeCallback callback_ = NULL;
@@ -125,7 +126,7 @@ public:
   FFmpegRamEncoder(const char *name, const char *mc_name, int width, int height,
                    int pixfmt, int align, int fps, int gop, int rc, int quality,
                    int kbs, int q, int thread_count, int gpu,
-                   RamEncodeCallback callback) {
+                   RamEncodeCallback callback, int profile) {
     name_ = name;
     mc_name_ = mc_name ? mc_name : "";
     width_ = width;
@@ -134,6 +135,7 @@ public:
     align_ = align;
     fps_ = fps;
     gop_ = gop;
+    profile_ = profile;
     rc_ = rc;
     quality_ = quality;
     kbs_ = kbs;
@@ -230,7 +232,7 @@ public:
     c_->pix_fmt =
         hw_pixfmt_ != AV_PIX_FMT_NONE ? hw_pixfmt_ : (AVPixelFormat)pixfmt_;
     c_->sw_pix_fmt = (AVPixelFormat)pixfmt_;
-    util_encode::set_av_codec_ctx(c_, name_, kbs_, gop_, fps_);
+    util_encode::set_av_codec_ctx(c_, name_, kbs_, gop_, fps_, profile_);
     if (!util_encode::set_lantency_free(c_->priv_data, name_)) {
       LOG_ERROR(std::string("set_lantency_free failed, name: ") + name_);
       return false;
@@ -412,12 +414,12 @@ ffmpeg_ram_new_encoder(const char *name, const char *mc_name, int width,
                        int height, int pixfmt, int align, int fps, int gop,
                        int rc, int quality, int kbs, int q, int thread_count,
                        int gpu, int *linesize, int *offset, int *length,
-                       RamEncodeCallback callback) {
+                       RamEncodeCallback callback, int profile) {
   FFmpegRamEncoder *encoder = NULL;
   try {
     encoder = new FFmpegRamEncoder(name, mc_name, width, height, pixfmt, align,
                                    fps, gop, rc, quality, kbs, q, thread_count,
-                                   gpu, callback);
+                                   gpu, callback, profile);
     if (encoder) {
       if (encoder->init(linesize, offset, length)) {
         return encoder;
